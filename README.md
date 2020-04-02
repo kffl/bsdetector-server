@@ -1,4 +1,4 @@
-![](https://github.com/newt0npk/TSD-Project-Backend/workflows/.github/workflows/workflow.yml/badge.svg)
+![.NET Core](https://github.com/newt0npk/TSD-Project-Backend/workflows/.NET%20Core/badge.svg)
 # Bad smells in code detector
 We have assembled a team (Tomasz Pućka, Marcin Rochowiak, Bartosz Paulewicz and Paweł Kuffel) and chosen a topic *__#8: Bad smells in code detector__*.
 
