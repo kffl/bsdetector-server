@@ -1,4 +1,4 @@
-![.NET Core](https://github.com/newt0npk/TSD-Project-Backend/workflows/Production%20deploy/badge.svg)
+![Production deploy](https://github.com/newt0npk/TSD-Project-Backend/workflows/Production%20deploy/badge.svg) ![Master PR](https://github.com/newt0npk/TSD-Project-Backend/workflows/Master%20PR/badge.svg)
 
 # Bad smells in code detector
 
