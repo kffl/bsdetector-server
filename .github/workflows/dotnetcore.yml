@@ -27,4 +27,3 @@ jobs:
         with:
           app-name: bsdetector
           publish-profile: ${{ secrets.publish_profile }}
-          package: "./BSDetector"
