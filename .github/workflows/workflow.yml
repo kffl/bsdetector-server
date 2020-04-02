@@ -2,34 +2,32 @@ name: .NET Core
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
+
+env:
+  AZURE_WEBAPP_NAME: bsdetector
+  AZURE_WEBAPP_PACKAGE_PATH: "./bin/Release/netcoreapp3.1"
 
 jobs:
-  build:
+  build-and-deploy:
+    name: Build and Deploy
 
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v1
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 3.1.101
-    - name: Install dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --configuration Release --no-restore
-  
-  deploy:
-    needs: build
-    name: Deploy
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: deploy to azure
-        uses: azure/appservice-actions/webapp@master
+      - uses: actions/checkout@v1
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
         with:
-          app-name: bsdetector
+          dotnet-version: 3.1.101
+      - name: Build
+        working-directory: ./
+        run: dotnet build --configuration Release
+      - name: "Deploy to Azure WebApp"
+        uses: azure/webapps-deploy@v1
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
           publish-profile: ${{ secrets.azureWebAppPublishProfile }}
+          package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
