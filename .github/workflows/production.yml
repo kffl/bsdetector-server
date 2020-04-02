@@ -1,10 +1,8 @@
-name: .NET Core
+name: Production deploy
 
 on:
   push:
-    branches: [master]
-  pull_request:
-    branches: [master]
+    branches: [production]
 
 env:
   AZURE_WEBAPP_NAME: bsdetector
@@ -25,6 +23,8 @@ jobs:
       - name: Build
         working-directory: ./
         run: dotnet build --configuration Release
+      - name: Test with dotnet
+        run: dotnet test --configuration Release
       - name: "Deploy to Azure WebApp"
         uses: azure/webapps-deploy@v1
         with:
