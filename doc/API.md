@@ -33,48 +33,201 @@ Sample response:
 
 ```javascript
 {
-    "linesAnalyzed": 2,
+    "linesAnalyzed": 4,
     "smellsDetected": [
         {
-            "name": "Sample_name",
-            "description": "Sample description of this smell",
+            "smellName": "Line too long",
+            "smellDescription": "Lines that are too long make your code less readable.",
             "occurances": [
                 {
-                    "snippet": "cont l = 5;",
-                    "lineStart": 5,
+                    "snippet": "TODO",
+                    "lineStart": 2,
                     "colStart": 0,
-                    "lineEnd": 5,
-                    "colEnd": 12
+                    "lineEnd": 2,
+                    "colEnd": 541
                 },
                 {
-                    "snippet": "var l = 10;\nvar m = 10;",
-                    "lineStart": 9,
+                    "snippet": "TODO",
+                    "lineStart": 3,
                     "colStart": 0,
-                    "lineEnd": 10,
-                    "colEnd": 11
+                    "lineEnd": 3,
+                    "colEnd": 540
                 }
             ]
         },
         {
-            "name": "Too many arguments for a function declaration",
-            "description": "A function declaration takes too many arguments. At most, 5 arguments per function are recommended.",
+            "smellName": "Too many parameters for a function declaration",
+            "smellDescription": "Maximum recommended number of parameters for a regular function is: 5.",
+            "occurances": []
+        },
+        {
+            "smellName": "Too many parameters for arrow function",
+            "smellDescription": "Maximum recommended number of parameters for an arrow function is: 4.",
             "occurances": [
                 {
-                    "snippet": "function x(a, b, c, d, e, f) {",
-                    "lineStart": 5,
+                    "snippet": "TODO",
+                    "lineStart": 2,
                     "colStart": 10,
-                    "lineEnd": 5,
-                    "colEnd": 39
-                },
-                {
-                    "snippet": "function qwerty(x, y, z, a, b, c) {",
-                    "lineStart": 9,
-                    "colStart": 0,
-                    "lineEnd": 9,
-                    "colEnd": 43
+                    "lineEnd": 2,
+                    "colEnd": 42
                 }
             ]
         }
     ]
+}
+```
+
+## Development/debugging endpoints
+
+### Get mock response regardless of input
+
+**POST** `/api/analyzemock`
+
+Content-Type: application/json
+
+Request payload:
+
+```javascript
+{
+    "code": "whatever"
+}
+```
+
+### Get Abstract Syntax Tree in JSON
+
+**POST** `/api/ast`
+
+Content-Type: application/json
+
+Request payload:
+
+```javascript
+{
+    "code": "console.log(`JS code goes in here`);"
+}
+```
+
+Sample response (AST):
+
+```javascript
+{
+    "type": "Program",
+    "body": [
+        {
+            "type": "ExpressionStatement",
+            "expression": {
+                "type": "CallExpression",
+                "callee": {
+                    "type": "MemberExpression",
+                    "computed": false,
+                    "object": {
+                        "type": "Identifier",
+                        "name": "console",
+                        "loc": {
+                            "start": {
+                                "line": 1,
+                                "column": 0
+                            },
+                            "end": {
+                                "line": 1,
+                                "column": 7
+                            }
+                        }
+                    },
+                    "property": {
+                        "type": "Identifier",
+                        "name": "log",
+                        "loc": {
+                            "start": {
+                                "line": 1,
+                                "column": 8
+                            },
+                            "end": {
+                                "line": 1,
+                                "column": 11
+                            }
+                        }
+                    },
+                    "loc": {
+                        "start": {
+                            "line": 1,
+                            "column": 0
+                        },
+                        "end": {
+                            "line": 1,
+                            "column": 11
+                        }
+                    }
+                },
+                "arguments": [
+                    {
+                        "type": "TemplateLiteral",
+                        "quasis": [
+                            {
+                                "type": "TemplateElement",
+                                "value": {
+                                    "raw": "JS code goes in here",
+                                    "cooked": "JS code goes in here"
+                                },
+                                "tail": true,
+                                "loc": {
+                                    "start": {
+                                        "line": 1,
+                                        "column": 12
+                                    },
+                                    "end": {
+                                        "line": 1,
+                                        "column": 34
+                                    }
+                                }
+                            }
+                        ],
+                        "expressions": [],
+                        "loc": {
+                            "start": {
+                                "line": 1,
+                                "column": 12
+                            },
+                            "end": {
+                                "line": 1,
+                                "column": 34
+                            }
+                        }
+                    }
+                ],
+                "loc": {
+                    "start": {
+                        "line": 1,
+                        "column": 0
+                    },
+                    "end": {
+                        "line": 1,
+                        "column": 35
+                    }
+                }
+            },
+            "loc": {
+                "start": {
+                    "line": 1,
+                    "column": 0
+                },
+                "end": {
+                    "line": 1,
+                    "column": 36
+                }
+            }
+        }
+    ],
+    "sourceType": "script",
+    "loc": {
+        "start": {
+            "line": 1,
+            "column": 0
+        },
+        "end": {
+            "line": 1,
+            "column": 36
+        }
+    }
 }
 ```
