@@ -38,7 +38,7 @@ Sample response:
         {
             "smellName": "Line too long",
             "smellDescription": "Lines that are too long make your code less readable.",
-            "occurances": [
+            "occurences": [
                 {
                     "snippet": "TODO",
                     "lineStart": 2,
@@ -58,12 +58,12 @@ Sample response:
         {
             "smellName": "Too many parameters for a function declaration",
             "smellDescription": "Maximum recommended number of parameters for a regular function is: 5.",
-            "occurances": []
+            "occurences": []
         },
         {
             "smellName": "Too many parameters for arrow function",
             "smellDescription": "Maximum recommended number of parameters for an arrow function is: 4.",
-            "occurances": [
+            "occurences": [
                 {
                     "snippet": "TODO",
                     "lineStart": 2,

@@ -15,15 +15,15 @@ namespace BSDetector.Controllers
     {
         private Smell[] mockSmells = new Smell[2] {
             new TooManyParametersArrowFunction {
-                Occurances = new Occurance[] {
-                    new Occurance {
+                Occurences = new Occurence[] {
+                    new Occurence {
                         Snippet = "cont l = 5;",
                         LineStart = 5,
                         LineEnd = 5,
                         ColStart = 0,
                         ColEnd = 12
                     },
-                    new Occurance {
+                    new Occurence {
                         Snippet = "var l = 10;\nvar m = 10;",
                         LineStart = 9,
                         LineEnd = 10,
@@ -32,15 +32,15 @@ namespace BSDetector.Controllers
                     },
             }.ToList()},
             new LineTooLong {
-                Occurances = new Occurance[] {
-                    new Occurance {
+                Occurences = new Occurence[] {
+                    new Occurence {
                         Snippet = "function x(a, b, c, d, e, f) {",
                         LineStart = 5,
                         LineEnd = 5,
                         ColStart = 10,
                         ColEnd = 39
                     },
-                    new Occurance {
+                    new Occurence {
                         Snippet = "function qwerty(x, y, z, a, b, c) {",
                         LineStart = 9,
                         LineEnd = 9,
@@ -93,8 +93,11 @@ namespace BSDetector.Controllers
         [HttpPost("/api/analyzemock")]
         public FileAnalysisResult AnalyzeMock([FromBody] AnalyzeCodeResource data)
         {
-            return new FileAnalysisResult {LinesAnalyzed = data.Code.Split('\n').Length,
-                SmellsDetected=mockSmells};
+            return new FileAnalysisResult
+            {
+                LinesAnalyzed = data.Code.Split('\n').Length,
+                SmellsDetected = mockSmells
+            };
         }
     }
 }

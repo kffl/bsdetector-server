@@ -1,21 +1,25 @@
 using System.Collections.Generic;
 
-namespace BSDetector {
-    public abstract class Smell {
+namespace BSDetector
+{
+    public abstract class Smell
+    {
 
-        public string SmellName {get; set;}
-        public string SmellDescription {get; set;}
-        public List<Occurance> Occurances {get; set;}
+        public string SmellName { get; set; }
+        public string SmellDescription { get; set; }
+        public List<Occurence> Occurences { get; set; }
 
         public Smell()
         {
-            Occurances = new List<Occurance>();
+            Occurences = new List<Occurence>();
         }
-        public void RegisterOccurance (int LineStart, int ColStart, int LineEnd, int ColEnd) {
-            Occurances.Add (new Occurance { LineStart = LineStart, ColStart = ColStart, LineEnd = LineEnd, ColEnd = ColEnd, Snippet = "TODO" });
+        public void RegisterOccurence(int LineStart, int ColStart, int LineEnd, int ColEnd)
+        {
+            Occurences.Add(new Occurence { LineStart = LineStart, ColStart = ColStart, LineEnd = LineEnd, ColEnd = ColEnd, Snippet = "TODO" });
         }
-        public Occurance[] GetOccurances () {
-            return Occurances.ToArray ();
+        public Occurence[] GetOccurences()
+        {
+            return Occurences.ToArray();
         }
     }
 }
