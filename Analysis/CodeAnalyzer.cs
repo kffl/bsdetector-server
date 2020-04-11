@@ -2,14 +2,14 @@ using System;
 using Esprima;
 using Esprima.Utils;
 using Esprima.Ast;
+using System.Collections.Generic;
 
 namespace BSDetector {
     public class CodeAnalyzer {
         private string Code;
         private int linesAnalyzed = 0;
-        private TooManyParametersFunction TooManyParametersFunctionDetector = new TooManyParametersFunction();
-        private TooManyParametersArrowFunction TooManyParametersArrowFunctionDetector = new TooManyParametersArrowFunction();
-        private LineTooLong LineTooLongDetector = new LineTooLong();
+        private List<AstSmell> AstSmells = new List<AstSmell>{new TooManyParametersFunction(), new TooManyParametersArrowFunction()};
+        private List<LineSmell> LineSmells = new List<LineSmell>{new LineTooLong()};
 
         public CodeAnalyzer(string Code) {
             this.Code = Code;
@@ -24,14 +24,15 @@ namespace BSDetector {
                 StringSplitOptions.None);
             
             int lineNum = 0;
-
+            string previousLine = "";
             foreach (var line in lines)
             {
-                if (line.Length > 140)
+                foreach (var smell in LineSmells)
                 {
-                    LineTooLongDetector.RegisterOccurance(lineNum, 0, lineNum, line.Length - 1);
+                    smell.AnalyzeLine(line, previousLine, lineNum);
                 }
                 lineNum++;
+                previousLine = line;
             }
 
             linesAnalyzed = lineNum;
@@ -39,19 +40,10 @@ namespace BSDetector {
 
         private void ASTreeDFS(INode node, int depth) {
 
-            if (node is ArrowFunctionExpression) {
-                    var ArrowFunctionNode = (ArrowFunctionExpression)node;
-                    if (ArrowFunctionNode.Params.Count > 4) {
-                        TooManyParametersArrowFunctionDetector.RegisterOccurance(ArrowFunctionNode.Location.Start.Line, ArrowFunctionNode.Location.Start.Column, ArrowFunctionNode.Location.End.Line, ArrowFunctionNode.Location.End.Column);
-                    }
-            }
-
-            if (node is FunctionDeclaration) {
-                    var RegularFunctionNode = (FunctionDeclaration)node;
-                    if (RegularFunctionNode.Params.Count > 5) {
-                        TooManyParametersArrowFunctionDetector.RegisterOccurance(RegularFunctionNode.Location.Start.Line, RegularFunctionNode.Location.Start.Column, RegularFunctionNode.Location.End.Line, RegularFunctionNode.Location.End.Column);
-                    }
-            }
+            foreach (var smell in AstSmells)       
+            {
+                smell.AnalyzeNode(node, depth);
+            }  
 
             foreach (var child in node.ChildNodes)
             {
@@ -87,13 +79,12 @@ namespace BSDetector {
         {
             SimplifiedAnalysis();
             ASTAnalysis();
+            var smellsList = new List<Smell> (LineSmells);
+            smellsList.AddRange(AstSmells);
             return new FileAnalysisResult {
                 LinesAnalyzed=linesAnalyzed,
-                SmellsDetected = new Smell[] 
-                    {LineTooLongDetector,
-                    TooManyParametersFunctionDetector,
-                    TooManyParametersArrowFunctionDetector}
-                };
+                SmellsDetected = smellsList.ToArray()
+            };
         }
 
         public string GetASTasJSONstring()
