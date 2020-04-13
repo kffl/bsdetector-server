@@ -15,15 +15,15 @@ namespace BSDetector.Controllers
     {
         private Smell[] mockSmells = new Smell[2] {
             new TooManyParametersArrowFunction {
-                Occurences = new Occurence[] {
-                    new Occurence {
+                Occurrences = new Occurrence[] {
+                    new Occurrence {
                         Snippet = "cont l = 5;",
                         LineStart = 5,
                         LineEnd = 5,
                         ColStart = 0,
                         ColEnd = 12
                     },
-                    new Occurence {
+                    new Occurrence {
                         Snippet = "var l = 10;\nvar m = 10;",
                         LineStart = 9,
                         LineEnd = 10,
@@ -32,15 +32,15 @@ namespace BSDetector.Controllers
                     },
             }.ToList()},
             new LineTooLong {
-                Occurences = new Occurence[] {
-                    new Occurence {
+                Occurrences = new Occurrence[] {
+                    new Occurrence {
                         Snippet = "function x(a, b, c, d, e, f) {",
                         LineStart = 5,
                         LineEnd = 5,
                         ColStart = 10,
                         ColEnd = 39
                     },
-                    new Occurence {
+                    new Occurrence {
                         Snippet = "function qwerty(x, y, z, a, b, c) {",
                         LineStart = 9,
                         LineEnd = 9,

@@ -11,7 +11,7 @@ namespace BSDetector
         {
             if (currentLine.Length > 140)
             {
-                RegisterOccurence(lineNum, 1, lineNum, currentLine.Length);
+                RegisterOccurrence(lineNum, 1, lineNum, currentLine.Length);
             }
         }
     }

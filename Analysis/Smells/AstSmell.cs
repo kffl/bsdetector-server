@@ -9,9 +9,9 @@ namespace BSDetector
         {
 
         }
-        public void RegisterOccurence(Location loc)
+        public void RegisterOccurrence(Location loc)
         {
-            RegisterOccurence(loc.Start.Line, loc.Start.Column, loc.End.Line, loc.End.Column);
+            RegisterOccurrence(loc.Start.Line, loc.Start.Column, loc.End.Line, loc.End.Column);
         }
     }
 }

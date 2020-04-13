@@ -15,7 +15,7 @@ namespace BSDetector
             {
                 if (ArrowFunctionNode.Params.Count > 4)
                 {
-                    RegisterOccurence(ArrowFunctionNode.Location);
+                    RegisterOccurrence(ArrowFunctionNode.Location);
                 }
             }
         }
