@@ -11,7 +11,7 @@ namespace BSDetector
         }
         public void RegisterOccurrence(Location loc)
         {
-            RegisterOccurrence(loc.Start.Line, loc.Start.Column, loc.End.Line, loc.End.Column);
+            RegisterOccurrence(loc.Start.Line, loc.Start.Column + 1, loc.End.Line, loc.End.Column + 1);
         }
         public void RegisterOccurrence(NodeList<INode> nodes)
         {
@@ -24,8 +24,8 @@ namespace BSDetector
                     firstNode = node;
                 lastNode = node;
             }
-            RegisterOccurrence(firstNode.Location.Start.Line, firstNode.Location.Start.Column,
-                                lastNode.Location.End.Line, lastNode.Location.End.Column);
+            RegisterOccurrence(firstNode.Location.Start.Line, firstNode.Location.Start.Column + 1,
+                                lastNode.Location.End.Line, lastNode.Location.End.Column + 1);
         }
     }
 }
