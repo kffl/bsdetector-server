@@ -6,9 +6,41 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Net.Http;
+using System.Net;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace BSDetector.Controllers
 {
+    public class CustomExceptionFilterAttribute : ExceptionFilterAttribute
+    {
+        public class ErrorResponse
+        {
+            [JsonPropertyName("error")]
+            public string errorName { get; set; }
+            public string message { get; set; }
+            public int line { get; set; }
+            public int column { get; set; }
+        }
+        public override void OnException(ExceptionContext context)
+        {
+            var exception = context.Exception;
+            if (exception is Esprima.ParserException e)
+            {
+                var result = new JsonResult(
+                    new ErrorResponse()
+                    {
+                        errorName = "PARSE_ERROR",
+                        message = e.Description,
+                        line = e.LineNumber,
+                        column = e.Column
+                    });
+                result.StatusCode = 400;
+                context.Result = result;
+            }
+        }
+    }
+
     [ApiController]
     [Route("[controller]")]
     public class FileAnalysisController : ControllerBase
@@ -67,6 +99,7 @@ namespace BSDetector.Controllers
         }
 
         [HttpPost("/api/analyze")]
+        [CustomExceptionFilter]
         public FileAnalysisResult Analyze([FromBody] AnalyzeCodeResource data)
         {
             var analyzer = new CodeAnalyzer(data.Code);
@@ -74,6 +107,7 @@ namespace BSDetector.Controllers
         }
 
         [HttpPost("/api/analyzemultipart")]
+        [CustomExceptionFilter]
         public FileAnalysisResult AnalyzeMultipart([FromForm] AnalyzeCodeResource data)
         {
             var analyzer = new CodeAnalyzer(data.Code);
@@ -83,9 +117,11 @@ namespace BSDetector.Controllers
         // Endpoint for development/debugging purposes
         // Builds an Abstract Syntax Tree without analysis
         [HttpPost("/api/ast")]
+        [CustomExceptionFilter]
         public JsonStringResult GenerateAst([FromBody] AnalyzeCodeResource data)
         {
             var analyzer = new CodeAnalyzer(data.Code);
+            //throw new ArgumentException("lol");
             return new JsonStringResult(analyzer.GetASTasJSONstring());
         }
 

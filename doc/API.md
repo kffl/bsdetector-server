@@ -11,7 +11,7 @@ Content-Type: application/json
 or
 Content-Type: multipart/form-data
 
-Request payload:
+#### Request payload:
 
 ```javascript
 {
@@ -29,7 +29,7 @@ content of uploaded file goes here
 -----------------------------158456752212orAnyOtherBoundary--
 ```
 
-Sample response:
+#### Response (200 OK):
 
 ```javascript
 {
@@ -77,6 +77,18 @@ Sample response:
 }
 ```
 
+#### Errors:
+
+Parse error (400 Bad request):
+```javascript
+{
+    "error": "PARSE_ERROR",
+    "message": "Unexpected identifier",
+    "line": 2,
+    "column": 11
+}
+```
+
 ## Development/debugging endpoints
 
 ### Get mock response regardless of input
@@ -85,7 +97,7 @@ Sample response:
 
 Content-Type: application/json
 
-Request payload:
+#### Request payload:
 
 ```javascript
 {
@@ -99,7 +111,7 @@ Request payload:
 
 Content-Type: application/json
 
-Request payload:
+#### Request payload:
 
 ```javascript
 {
@@ -107,7 +119,7 @@ Request payload:
 }
 ```
 
-Sample response (AST):
+#### Sample response:
 
 ```javascript
 {
