@@ -15,7 +15,7 @@ namespace BSDetector
             {
                 if (RegularFunctionNode.Params.Count > 5)
                 {
-                    RegisterOccurrence(RegularFunctionNode.Location);
+                    RegisterOccurrence(RegularFunctionNode.Params.AsNodes());
                 }
             }
         }
