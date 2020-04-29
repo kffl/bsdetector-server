@@ -11,7 +11,7 @@ Content-Type: application/json
 or
 Content-Type: multipart/form-data
 
-Request payload:
+#### Request payload:
 
 ```javascript
 {
@@ -29,7 +29,7 @@ content of uploaded file goes here
 -----------------------------158456752212orAnyOtherBoundary--
 ```
 
-Sample response:
+#### Response (200 OK):
 
 ```javascript
 {
@@ -38,7 +38,7 @@ Sample response:
         {
             "smellName": "Line too long",
             "smellDescription": "Lines that are too long make your code less readable.",
-            "occurances": [
+            "occurrences": [
                 {
                     "snippet": "TODO",
                     "lineStart": 2,
@@ -58,12 +58,12 @@ Sample response:
         {
             "smellName": "Too many parameters for a function declaration",
             "smellDescription": "Maximum recommended number of parameters for a regular function is: 5.",
-            "occurances": []
+            "occurrences": []
         },
         {
             "smellName": "Too many parameters for arrow function",
             "smellDescription": "Maximum recommended number of parameters for an arrow function is: 4.",
-            "occurances": [
+            "occurrences": [
                 {
                     "snippet": "TODO",
                     "lineStart": 2,
@@ -77,6 +77,18 @@ Sample response:
 }
 ```
 
+#### Errors:
+
+Parse error (400 Bad request):
+```javascript
+{
+    "error": "PARSE_ERROR",
+    "message": "Unexpected identifier",
+    "line": 2,
+    "column": 11
+}
+```
+
 ## Development/debugging endpoints
 
 ### Get mock response regardless of input
@@ -85,7 +97,7 @@ Sample response:
 
 Content-Type: application/json
 
-Request payload:
+#### Request payload:
 
 ```javascript
 {
@@ -99,7 +111,7 @@ Request payload:
 
 Content-Type: application/json
 
-Request payload:
+#### Request payload:
 
 ```javascript
 {
@@ -107,7 +119,7 @@ Request payload:
 }
 ```
 
-Sample response (AST):
+#### Sample response:
 
 ```javascript
 {

@@ -25,6 +25,14 @@ namespace BSDetector
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowClientApp",
+                    builder =>
+                    {
+                        builder.WithOrigins("https://bsdetector.netlify.com");
+                    });
+            });
             services.AddControllers();
         }
 
@@ -36,6 +44,7 @@ namespace BSDetector
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseCors("AllowClientApp");
             app.UseHttpsRedirection();
 
             app.UseRouting();

@@ -4,7 +4,7 @@
 
 We have assembled a team (Tomasz Pućka, Marcin Rochowiak, Bartosz Paulewicz and Paweł Kuffel) and chosen a topic _**#8: Bad smells in code detector**_.
 
-We will use ASP.NET with PostgreSQL for backend and Vue.js for frontend.
+We will use ASP.NET with PostgreSQL for backend and Vue.js for frontend. For simplicity sake, we decided to split the project into two repositories. The frontend (client) repository [is here](https://github.com/newt0npk/TSD-Project-Frontend), wheras this is the backend repo.
 
 Our MVP would be a web app capable of detecting bad smells in uploaded JavaScript code by performing static code analysis.
 
