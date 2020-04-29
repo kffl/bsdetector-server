@@ -9,6 +9,7 @@ using System.Text.Json.Serialization;
 using System.Net.Http;
 using System.Net;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Cors;
 
 namespace BSDetector.Controllers
 {
@@ -99,6 +100,7 @@ namespace BSDetector.Controllers
         }
 
         [HttpPost("/api/analyze")]
+        [EnableCors("ClientApp")]
         [CustomExceptionFilter]
         public FileAnalysisResult Analyze([FromBody] AnalyzeCodeResource data)
         {
@@ -107,6 +109,7 @@ namespace BSDetector.Controllers
         }
 
         [HttpPost("/api/analyzemultipart")]
+        [EnableCors("ClientApp")]
         [CustomExceptionFilter]
         public FileAnalysisResult AnalyzeMultipart([FromForm] AnalyzeCodeResource data)
         {
@@ -117,6 +120,7 @@ namespace BSDetector.Controllers
         // Endpoint for development/debugging purposes
         // Builds an Abstract Syntax Tree without analysis
         [HttpPost("/api/ast")]
+        [EnableCors("ClientApp")]
         [CustomExceptionFilter]
         public JsonStringResult GenerateAst([FromBody] AnalyzeCodeResource data)
         {
@@ -127,6 +131,7 @@ namespace BSDetector.Controllers
 
         // Mock endpoint showing response structure
         [HttpPost("/api/analyzemock")]
+        [EnableCors("ClientApp")]
         public FileAnalysisResult AnalyzeMock([FromBody] AnalyzeCodeResource data)
         {
             return new FileAnalysisResult
