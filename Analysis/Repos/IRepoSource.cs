@@ -6,6 +6,5 @@ namespace BSDetector.Analysis.Repos
     public interface IRepoSource
     {
         public IEnumerable<IRepoFile> GetFiles();
-        public Task FetchData();
     }
 }

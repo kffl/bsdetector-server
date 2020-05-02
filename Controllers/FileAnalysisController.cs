@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
+using BSDetector.Analysis.Repos.Uploaded;
 
 namespace BSDetector.Controllers
 {
@@ -60,16 +61,21 @@ namespace BSDetector.Controllers
             var analyzer = new CodeAnalyzer(data.Code);
             return analyzer.AnalyzeCode();
         }
+
         // Uploaded files analysis endpoint
         // Allows for uploading multiple files at once
         [HttpPost("/api/analyzemultipart")]
         [EnableCors("ClientApp")]
         [CustomExceptionFilter]
-        public FileAnalysisResult AnalyzeMultipart([FromForm] AnalyzeCodeResource data)
+        public async Task<List<FileAnalysisResult>> AnalyzeMultipart([FromForm] AnalyzeFilesMultipleResource data)
         {
-            var analyzer = new CodeAnalyzer(data.Code);
-            return analyzer.AnalyzeCode();
+            var repoSource = new UploadedRepo();
+            await repoSource.ReadUploadedFiles(data.code);
+            var repoAnalyzer = new RepoAnalyzer(repoSource);
+            repoAnalyzer.AnalyzeRepo();
+            return repoAnalyzer.AnalysisResult;
         }
+
         // Public github repo analysis endpoint
         [HttpPost("/api/analyzerepo")]
         [AnalysisExceptionFilter]
