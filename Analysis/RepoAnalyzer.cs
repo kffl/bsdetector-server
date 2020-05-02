@@ -25,7 +25,7 @@ namespace BSDetector.Analysis
                 }
                 catch (Esprima.ParserException e)
                 {
-                    var error = new ErrorResponse()
+                    var error = new ParseErrorResponse()
                     {
                         errorName = "PARSE_ERROR",
                         message = e.Description,

@@ -5,8 +5,10 @@ namespace BSDetector
     public abstract class Smell
     {
 
-        public string SmellName { get; set; }
-        public string SmellDescription { get; set; }
+        public virtual string SmellName { get; }
+
+        public virtual string SmellDescription { get; }
+
         public List<Occurrence> Occurrences { get; set; }
 
         public Smell()

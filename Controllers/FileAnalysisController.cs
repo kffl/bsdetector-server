@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using BSDetector.Analysis;
 using BSDetector.Repos.GitHub;
+using BSDetector.Analysis.Exceptions;
 using BSDetector.Resources;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
@@ -18,7 +19,7 @@ namespace BSDetector.Controllers
             if (exception is Esprima.ParserException e)
             {
                 var result = new JsonResult(
-                    new ErrorResponse()
+                    new ParseErrorResponse()
                     {
                         errorName = "PARSE_ERROR",
                         message = e.Description,
@@ -71,6 +72,7 @@ namespace BSDetector.Controllers
         }
         // Public github repo analysis endpoint
         [HttpPost("/api/analyzerepo")]
+        [AnalysisExceptionFilter]
         [EnableCors("ClientApp")]
         public async Task<List<FileAnalysisResult>> AnalyzePublicRepo([FromBody] AnalyzeRepoResource data)
         {
