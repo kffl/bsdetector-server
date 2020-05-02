@@ -2,14 +2,11 @@
 
 ## Endpoints
 
-### Send code for analysis
+### Send code for analysis (single file)
 
 **POST** `/api/analyze`
-**POST** `/api/analyzemultipart`
 
 Content-Type: application/json
-or
-Content-Type: multipart/form-data
 
 #### Request payload:
 
@@ -17,16 +14,6 @@ Content-Type: multipart/form-data
 {
     "code": "js source code;\nvar l = 10;"
 }
-```
-
-or:
-
-```
------------------------------158456752212orAnyOtherBoundary
-Content-Disposition: form-data; name="code"
-
-content of uploaded file goes here
------------------------------158456752212orAnyOtherBoundary--
 ```
 
 #### Response (200 OK):
@@ -89,157 +76,72 @@ Parse error (400 Bad request):
 }
 ```
 
-## Development/debugging endpoints
+### Analyze code (upload up to 10 files)
 
-### Get mock response regardless of input
+**POST** `/api/analyzemultipart`
 
-**POST** `/api/analyzemock`
-
-Content-Type: application/json
+Content-Type: multipart/form-data
 
 #### Request payload:
 
-```javascript
-{
-    "code": "whatever"
-}
+```
+----------------------------123BOUNDARY123456789
+Content-Disposition: form-data; name="code"; filename="firstfile.js"
+<content of firstfile.js>
+----------------------------123BOUNDARY123456789
+Content-Disposition: form-data; name="code"; filename="secondfile.js"
+<content of secondfile.js>
+----------------------------123BOUNDARY123456789
 ```
 
-### Get Abstract Syntax Tree in JSON
-
-**POST** `/api/ast`
-
-Content-Type: application/json
-
-#### Request payload:
+#### Response
 
 ```javascript
-{
-    "code": "console.log(`JS code goes in here`);"
-}
-```
-
-#### Sample response:
-
-```javascript
-{
-    "type": "Program",
-    "body": [
-        {
-            "type": "ExpressionStatement",
-            "expression": {
-                "type": "CallExpression",
-                "callee": {
-                    "type": "MemberExpression",
-                    "computed": false,
-                    "object": {
-                        "type": "Identifier",
-                        "name": "console",
-                        "loc": {
-                            "start": {
-                                "line": 1,
-                                "column": 0
-                            },
-                            "end": {
-                                "line": 1,
-                                "column": 7
-                            }
-                        }
-                    },
-                    "property": {
-                        "type": "Identifier",
-                        "name": "log",
-                        "loc": {
-                            "start": {
-                                "line": 1,
-                                "column": 8
-                            },
-                            "end": {
-                                "line": 1,
-                                "column": 11
-                            }
-                        }
-                    },
-                    "loc": {
-                        "start": {
-                            "line": 1,
-                            "column": 0
-                        },
-                        "end": {
-                            "line": 1,
-                            "column": 11
-                        }
-                    }
-                },
-                "arguments": [
-                    {
-                        "type": "TemplateLiteral",
-                        "quasis": [
-                            {
-                                "type": "TemplateElement",
-                                "value": {
-                                    "raw": "JS code goes in here",
-                                    "cooked": "JS code goes in here"
-                                },
-                                "tail": true,
-                                "loc": {
-                                    "start": {
-                                        "line": 1,
-                                        "column": 12
-                                    },
-                                    "end": {
-                                        "line": 1,
-                                        "column": 34
-                                    }
-                                }
-                            }
-                        ],
-                        "expressions": [],
-                        "loc": {
-                            "start": {
-                                "line": 1,
-                                "column": 12
-                            },
-                            "end": {
-                                "line": 1,
-                                "column": 34
-                            }
-                        }
-                    }
-                ],
-                "loc": {
-                    "start": {
-                        "line": 1,
-                        "column": 0
-                    },
-                    "end": {
-                        "line": 1,
-                        "column": 35
-                    }
-                }
-            },
-            "loc": {
-                "start": {
-                    "line": 1,
-                    "column": 0
-                },
-                "end": {
-                    "line": 1,
-                    "column": 36
-                }
-            }
+[
+    {
+        "fileName": "file1",
+        "linesAnalyzed": 0,
+        "error": {
+            "error": "PARSE_ERROR",
+            "message": "Unexpected identifier",
+            "line": 2,
+            "column": 11
         }
-    ],
-    "sourceType": "script",
-    "loc": {
-        "start": {
-            "line": 1,
-            "column": 0
-        },
-        "end": {
-            "line": 1,
-            "column": 36
-        }
+    },
+    {
+        "fileName": "file2",
+        "linesAnalyzed": 2,
+        "smellsDetected": [<see example above>]
     }
+]
+```
+
+### Analyze public GitHub repo
+
+**POST** `/api/analyzerepo`
+
+Content-Type: application/json
+
+#### Request payload:
+
+```javascript
+{
+    "username": "github-username",
+    "reponame": "github-repo-name"
+}
+```
+
+#### Response:
+
+See: Analyze code (upload up to 10 files)
+
+#### Errors:
+
+404:
+
+```javascript
+{
+    "error": "REPO_FETCH_ERROR",
+    "message": "GitHub repo not found"
 }
 ```

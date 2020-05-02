@@ -45,27 +45,19 @@ namespace BSDetector.Analysis.Repos.GitHub
 
         public async Task FetchRawContent(string userName, string repoName)
         {
-            try
+            using (HttpClient client = new HttpClient())
             {
-                using (HttpClient client = new HttpClient())
+                var GitHubRawRequestUrl = $"https://raw.githubusercontent.com/{userName}/{repoName}/master/{fileName}";
+                client.DefaultRequestHeaders.Add("User-Agent", "BSdetector");
+                using (HttpResponseMessage res = await client.GetAsync(GitHubRawRequestUrl))
                 {
-                    var GitHubRawRequestUrl = $"https://raw.githubusercontent.com/{userName}/{repoName}/master/{fileName}";
-                    client.DefaultRequestHeaders.Add("User-Agent", "BSdetector");
-                    using (HttpResponseMessage res = await client.GetAsync(GitHubRawRequestUrl))
+                    using (HttpContent content = res.Content)
                     {
-                        using (HttpContent content = res.Content)
-                        {
-                            var data = await content.ReadAsStringAsync();
-                            this.fileContent = data;
-                        }
+                        var data = await content.ReadAsStringAsync();
+                        this.fileContent = data;
                     }
                 }
             }
-            catch (Exception exception)
-            {
-                Console.WriteLine(exception.Message);
-            }
-
         }
     }
 }
