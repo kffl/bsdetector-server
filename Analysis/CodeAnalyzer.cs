@@ -3,27 +3,35 @@ using Esprima;
 using Esprima.Utils;
 using Esprima.Ast;
 using System.Collections.Generic;
+using BSDetector.Analysis.Repos;
 
 namespace BSDetector
 {
     public class CodeAnalyzer
     {
-        private string Code;
+        private string fileName;
+        private string code;
         private int linesAnalyzed = 0;
         private List<AstSmell> AstSmells = new List<AstSmell> { new TooManyParametersFunction(), new TooManyParametersArrowFunction() };
         private List<LineSmell> LineSmells = new List<LineSmell> { new LineTooLong() };
 
-        public CodeAnalyzer(string Code)
+        public CodeAnalyzer(string code, string fileName = null)
         {
-            this.Code = Code;
+            this.code = code;
+            this.fileName = fileName;
         }
 
+        public CodeAnalyzer(IRepoFile file)
+        {
+            this.code = file.fileContent;
+            this.fileName = file.fileName;
+        }
 
         //simplified analysis is performed by iterating over the entire code line by line
         private void SimplifiedAnalysis()
         {
 
-            string[] lines = Code.Split(
+            string[] lines = code.Split(
                 new[] { "\r\n", "\r", "\n" },
                 StringSplitOptions.None);
 
@@ -62,7 +70,7 @@ namespace BSDetector
             customParserOptions.Loc = true;
             customParserOptions.Range = true;
 
-            var parser = new JavaScriptParser(Code, customParserOptions);
+            var parser = new JavaScriptParser(code, customParserOptions);
             var program = parser.ParseScript();
 
             return program;
@@ -89,6 +97,7 @@ namespace BSDetector
             smellsList.AddRange(AstSmells);
             return new FileAnalysisResult
             {
+                FileName = fileName,
                 LinesAnalyzed = linesAnalyzed,
                 SmellsDetected = smellsList.ToArray()
             };
