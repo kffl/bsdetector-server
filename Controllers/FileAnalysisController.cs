@@ -1,35 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Net.Http;
-using System.Net;
-using Microsoft.AspNetCore.Mvc.Filters;
+using BSDetector.Analysis;
+using BSDetector.Repos.GitHub;
+using BSDetector.Analysis.Exceptions;
+using BSDetector.Resources;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Logging;
+using BSDetector.Analysis.Repos.Uploaded;
 
 namespace BSDetector.Controllers
 {
     public class CustomExceptionFilterAttribute : ExceptionFilterAttribute
     {
-        public class ErrorResponse
-        {
-            [JsonPropertyName("error")]
-            public string errorName { get; set; }
-            public string message { get; set; }
-            public int line { get; set; }
-            public int column { get; set; }
-        }
         public override void OnException(ExceptionContext context)
         {
             var exception = context.Exception;
             if (exception is Esprima.ParserException e)
             {
                 var result = new JsonResult(
-                    new ErrorResponse()
+                    new ParseErrorResponse()
                     {
                         errorName = "PARSE_ERROR",
                         message = e.Description,
@@ -46,43 +37,6 @@ namespace BSDetector.Controllers
     [Route("[controller]")]
     public class FileAnalysisController : ControllerBase
     {
-        private Smell[] mockSmells = new Smell[2] {
-            new TooManyParametersArrowFunction {
-                Occurrences = new Occurrence[] {
-                    new Occurrence {
-                        Snippet = "cont l = 5;",
-                        LineStart = 5,
-                        LineEnd = 5,
-                        ColStart = 0,
-                        ColEnd = 12
-                    },
-                    new Occurrence {
-                        Snippet = "var l = 10;\nvar m = 10;",
-                        LineStart = 9,
-                        LineEnd = 10,
-                        ColStart = 0,
-                        ColEnd = 11
-                    },
-            }.ToList()},
-            new LineTooLong {
-                Occurrences = new Occurrence[] {
-                    new Occurrence {
-                        Snippet = "function x(a, b, c, d, e, f) {",
-                        LineStart = 5,
-                        LineEnd = 5,
-                        ColStart = 10,
-                        ColEnd = 39
-                    },
-                    new Occurrence {
-                        Snippet = "function qwerty(x, y, z, a, b, c) {",
-                        LineStart = 9,
-                        LineEnd = 9,
-                        ColStart = 0,
-                        ColEnd = 43
-                    },
-            }.ToList()
-            }};
-
         public class JsonStringResult : ContentResult
         {
             public JsonStringResult(string json)
@@ -108,37 +62,32 @@ namespace BSDetector.Controllers
             return analyzer.AnalyzeCode();
         }
 
+        // Uploaded files analysis endpoint
+        // Allows for uploading multiple files at once
         [HttpPost("/api/analyzemultipart")]
         [EnableCors("ClientApp")]
         [CustomExceptionFilter]
-        public FileAnalysisResult AnalyzeMultipart([FromForm] AnalyzeCodeResource data)
+        public async Task<List<FileAnalysisResult>> AnalyzeMultipart([FromForm] AnalyzeFilesMultipleResource data)
         {
-            var analyzer = new CodeAnalyzer(data.Code);
-            return analyzer.AnalyzeCode();
+            var repoSource = new UploadedRepo();
+            await repoSource.ReadUploadedFiles(data.code);
+            var repoAnalyzer = new RepoAnalyzer(repoSource);
+            repoAnalyzer.AnalyzeRepo();
+            return repoAnalyzer.AnalysisResult;
         }
 
-        // Endpoint for development/debugging purposes
-        // Builds an Abstract Syntax Tree without analysis
-        [HttpPost("/api/ast")]
+        // Public github repo analysis endpoint
+        [HttpPost("/api/analyzerepo")]
+        [AnalysisExceptionFilter]
         [EnableCors("ClientApp")]
-        [CustomExceptionFilter]
-        public JsonStringResult GenerateAst([FromBody] AnalyzeCodeResource data)
+        public async Task<List<FileAnalysisResult>> AnalyzePublicRepo([FromBody] AnalyzeRepoResource data)
         {
-            var analyzer = new CodeAnalyzer(data.Code);
-            //throw new ArgumentException("lol");
-            return new JsonStringResult(analyzer.GetASTasJSONstring());
-        }
-
-        // Mock endpoint showing response structure
-        [HttpPost("/api/analyzemock")]
-        [EnableCors("ClientApp")]
-        public FileAnalysisResult AnalyzeMock([FromBody] AnalyzeCodeResource data)
-        {
-            return new FileAnalysisResult
-            {
-                LinesAnalyzed = data.Code.Split('\n').Length,
-                SmellsDetected = mockSmells
-            };
+            var repoSource = new GitHubRepoTree(data.username, data.reponame);
+            await repoSource.FetchData();
+            // Using dependency injection - giving RepoAnalyzer a preconfigured repo source
+            var repoAnalyzer = new RepoAnalyzer(repoSource);
+            repoAnalyzer.AnalyzeRepo();
+            return repoAnalyzer.AnalysisResult;
         }
     }
 }

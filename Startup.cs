@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,7 +14,6 @@ namespace BSDetector
 {
     public class Startup
     {
-        readonly string MyAllowSpecificOrigins = "_allowClientApp";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -32,7 +30,10 @@ namespace BSDetector
                     .AllowAnyMethod()
                     .AllowAnyHeader();
             }));
-            services.AddControllers();
+            services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.IgnoreNullValues = true;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

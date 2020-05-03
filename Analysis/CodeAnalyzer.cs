@@ -3,30 +3,63 @@ using Esprima;
 using Esprima.Utils;
 using Esprima.Ast;
 using System.Collections.Generic;
+using BSDetector.Analysis.Repos;
+using BSDetector.Resources;
 
 namespace BSDetector
 {
+    /// <summary>
+    /// Performs analysis of a single file
+    /// </summary>
     public class CodeAnalyzer
     {
-        private string Code;
+        private string fileName;
+        private List<Smell> smellsList;
+        private string code;
+        private string[] lines;
         private int linesAnalyzed = 0;
         private List<AstSmell> AstSmells = new List<AstSmell> { new TooManyParametersFunction(), new TooManyParametersArrowFunction() };
         private List<LineSmell> LineSmells = new List<LineSmell> { new LineTooLong() };
 
-        public CodeAnalyzer(string Code)
+        /// <summary>
+        /// Constructor that uses source code and filename
+        /// </summary>
+        /// <param name="code">Source code for analysis</param>
+        /// <param name="fileName">Analyzed file name</param>
+        public CodeAnalyzer(string code, string fileName = null)
         {
-            this.Code = Code;
+            ParseLines(code);
+            this.code = code;
+            this.fileName = fileName;
         }
 
+        /// <summary>
+        /// CodeAnalyzer constructor that uses a repository file to be analyzed
+        /// </summary>
+        /// <param name="file">Repository file to be analyzed</param>
+        public CodeAnalyzer(IRepoFile file)
+        {
+            ParseLines(file.fileContent);
+            this.code = file.fileContent;
+            this.fileName = file.fileName;
+        }
 
-        //simplified analysis is performed by iterating over the entire code line by line
+        /// <summary>
+        /// Splits source code string into separate lines
+        /// </summary>
+        /// <param name="code">Source code</param>
+        private void ParseLines(string code)
+        {
+            lines = code.Split(
+                        new[] { "\r\n", "\r", "\n" },
+                        StringSplitOptions.None);
+        }
+
+        /// <summary>
+        /// Simplified analysis is performed by iterating over the entire code line by line 
+        /// </summary>
         private void SimplifiedAnalysis()
         {
-
-            string[] lines = Code.Split(
-                new[] { "\r\n", "\r", "\n" },
-                StringSplitOptions.None);
-
             int lineNum = 1;
             string previousLine = "";
             foreach (var line in lines)
@@ -38,10 +71,14 @@ namespace BSDetector
                 lineNum++;
                 previousLine = line;
             }
-
             linesAnalyzed = lineNum - 1;
         }
 
+        /// <summary>
+        /// Recursively performs Depth First Traversal of the AST
+        /// </summary>
+        /// <param name="node">Current/starting AST node</param>
+        /// <param name="depth">Current depth</param>
         private void ASTreeDFS(INode node, int depth)
         {
 
@@ -56,20 +93,26 @@ namespace BSDetector
             }
         }
 
+        /// <summary>
+        /// Builds an abstract syntax tree out of source file
+        /// </summary>
+        /// <returns>Parsed program including it's AST</returns>
         private Script BuildAST()
         {
             var customParserOptions = new ParserOptions();
             customParserOptions.Loc = true;
             customParserOptions.Range = true;
 
-            var parser = new JavaScriptParser(Code, customParserOptions);
+            var parser = new JavaScriptParser(code, customParserOptions);
             var program = parser.ParseScript();
 
             return program;
         }
 
-        //ast analysis is performed by going through the entire abstract syntax tree
-        //...and analysing visited nodes
+        /// <summary>
+        /// Ast analysis is performed by going through the entire abstract syntax tree
+        /// and analyzing visited nodes
+        /// </summary>
         private void ASTAnalysis()
         {
 
@@ -81,19 +124,50 @@ namespace BSDetector
             }
         }
 
+        /// <summary>
+        /// Iterates over detected smells and adds appropriate snippets to them
+        /// </summary>
+        private void AddSmellSnippets()
+        {
+            foreach (var smell in smellsList)
+            {
+                var prependingLines = smell.snippetContextBefore;
+                var trailingLines = smell.snippetContextAfter;
+                foreach (var occurrence in smell.Occurrences)
+                {
+                    var lineStart = occurrence.LineStart - prependingLines;
+                    var lineEnd = occurrence.LineEnd + trailingLines;
+                    lineStart = lineStart < 1 ? 1 : lineStart;
+                    lineEnd = lineEnd > lines.Length ? lines.Length : lineEnd;
+                    var len = lineEnd - lineStart + 1;
+                    occurrence.Snippet = String.Join("\n", lines, lineStart - 1, len);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Performs analysis of a single file
+        /// </summary>
+        /// <returns>Results of file analysis</returns>
         public FileAnalysisResult AnalyzeCode()
         {
             SimplifiedAnalysis();
             ASTAnalysis();
-            var smellsList = new List<Smell>(LineSmells);
+            smellsList = new List<Smell>(LineSmells);
             smellsList.AddRange(AstSmells);
+            AddSmellSnippets();
             return new FileAnalysisResult
             {
+                FileName = fileName,
                 LinesAnalyzed = linesAnalyzed,
                 SmellsDetected = smellsList.ToArray()
             };
         }
 
+        /// <summary>
+        /// Generates an abstract syntax tree as JOSN.
+        /// </summary>
+        /// <returns>JSON stringified abstract syntax tree</returns>
         public string GetASTasJSONstring()
         {
             var program = BuildAST();

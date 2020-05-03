@@ -1,5 +1,8 @@
 namespace BSDetector
 {
+    /// <summary>
+    /// Represents a single occurrence of a given code smell
+    /// </summary>
     public class Occurrence
     {
         public string Snippet { get; set; }
