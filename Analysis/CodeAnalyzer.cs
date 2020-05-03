@@ -14,7 +14,9 @@ namespace BSDetector
     public class CodeAnalyzer
     {
         private string fileName;
+        private List<Smell> smellsList;
         private string code;
+        private string[] lines;
         private int linesAnalyzed = 0;
         private List<AstSmell> AstSmells = new List<AstSmell> { new TooManyParametersFunction(), new TooManyParametersArrowFunction() };
         private List<LineSmell> LineSmells = new List<LineSmell> { new LineTooLong() };
@@ -26,6 +28,7 @@ namespace BSDetector
         /// <param name="fileName">Analyzed file name</param>
         public CodeAnalyzer(string code, string fileName = null)
         {
+            ParseLines(code);
             this.code = code;
             this.fileName = fileName;
         }
@@ -36,8 +39,20 @@ namespace BSDetector
         /// <param name="file">Repository file to be analyzed</param>
         public CodeAnalyzer(IRepoFile file)
         {
+            ParseLines(file.fileContent);
             this.code = file.fileContent;
             this.fileName = file.fileName;
+        }
+
+        /// <summary>
+        /// Splits source code string into separate lines
+        /// </summary>
+        /// <param name="code">Source code</param>
+        private void ParseLines(string code)
+        {
+            lines = code.Split(
+                        new[] { "\r\n", "\r", "\n" },
+                        StringSplitOptions.None);
         }
 
         /// <summary>
@@ -45,11 +60,6 @@ namespace BSDetector
         /// </summary>
         private void SimplifiedAnalysis()
         {
-
-            string[] lines = code.Split(
-                new[] { "\r\n", "\r", "\n" },
-                StringSplitOptions.None);
-
             int lineNum = 1;
             string previousLine = "";
             foreach (var line in lines)
@@ -61,7 +71,6 @@ namespace BSDetector
                 lineNum++;
                 previousLine = line;
             }
-
             linesAnalyzed = lineNum - 1;
         }
 
@@ -116,6 +125,27 @@ namespace BSDetector
         }
 
         /// <summary>
+        /// Iterates over detected smells and adds appropriate snippets to them
+        /// </summary>
+        private void AddSmellSnippets()
+        {
+            foreach (var smell in smellsList)
+            {
+                var prependingLines = smell.snippetContextBefore;
+                var trailingLines = smell.snippetContextAfter;
+                foreach (var occurrence in smell.Occurrences)
+                {
+                    var lineStart = occurrence.LineStart - prependingLines;
+                    var lineEnd = occurrence.LineEnd + trailingLines;
+                    lineStart = lineStart < 1 ? 1 : lineStart;
+                    lineEnd = lineEnd > lines.Length ? lines.Length : lineEnd;
+                    var len = lineEnd - lineStart + 1;
+                    occurrence.Snippet = String.Join("\n", lines, lineStart - 1, len);
+                }
+            }
+        }
+
+        /// <summary>
         /// Performs analysis of a single file
         /// </summary>
         /// <returns>Results of file analysis</returns>
@@ -123,8 +153,9 @@ namespace BSDetector
         {
             SimplifiedAnalysis();
             ASTAnalysis();
-            var smellsList = new List<Smell>(LineSmells);
+            smellsList = new List<Smell>(LineSmells);
             smellsList.AddRange(AstSmells);
+            AddSmellSnippets();
             return new FileAnalysisResult
             {
                 FileName = fileName,

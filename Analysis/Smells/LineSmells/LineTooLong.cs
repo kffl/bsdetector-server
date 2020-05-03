@@ -10,6 +10,8 @@ namespace BSDetector
             }
         }
 
+        public override int snippetContextBefore { get { return 1; } }
+
         public override string SmellDescription
         {
             get
