@@ -8,7 +8,6 @@ namespace BSDetector
     public abstract class Smell
     {
         public virtual string SmellName { get; }
-        public virtual string SmellDescription { get; }
         public List<Occurrence> Occurrences { get; set; }
         /// <summary>
         /// Determines how many lines before the smell occurrence shall be included

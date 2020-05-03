@@ -8,15 +8,7 @@ namespace BSDetector
         {
             get
             {
-                return "Too many parameters for arrow function";
-            }
-        }
-
-        public override string SmellDescription
-        {
-            get
-            {
-                return "maximum recommended number of parameters for an arrow function is: 4.";
+                return "TOO_MANY_PARAMS_ARROW";
             }
         }
 

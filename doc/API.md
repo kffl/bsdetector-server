@@ -23,8 +23,7 @@ Content-Type: application/json
     "linesAnalyzed": 4,
     "smellsDetected": [
         {
-            "smellName": "Line too long",
-            "smellDescription": "Lines that are too long make your code less readable.",
+            "smellName": "LINE_TOO_LONG",
             "occurrences": [
                 {
                     "snippet": "TODO",
@@ -43,13 +42,11 @@ Content-Type: application/json
             ]
         },
         {
-            "smellName": "Too many parameters for a function declaration",
-            "smellDescription": "Maximum recommended number of parameters for a regular function is: 5.",
+            "smellName": "TOO_MANY_PARAMS_FUNCTION",
             "occurrences": []
         },
         {
-            "smellName": "Too many parameters for arrow function",
-            "smellDescription": "Maximum recommended number of parameters for an arrow function is: 4.",
+            "smellName": "TOO_MANY_PARAMS_ARROW",
             "occurrences": [
                 {
                     "snippet": "TODO",

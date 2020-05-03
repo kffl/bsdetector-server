@@ -8,17 +8,10 @@ namespace BSDetector
         {
             get
             {
-                return "Maximum recommended number of parameters for a regular function is: 5.";
+                return "TOO_MANY_PARAMS_FUNCTION";
             }
         }
 
-        public override string SmellDescription
-        {
-            get
-            {
-                return "Maximum recommended number of parameters for a regular function is: 5.";
-            }
-        }
         public override void AnalyzeNode(INode node, int depth)
         {
             if (node is FunctionDeclaration RegularFunctionNode)

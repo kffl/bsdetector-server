@@ -6,19 +6,11 @@ namespace BSDetector
         {
             get
             {
-                return "Line too long";
+                return "LINE_TOO_LONG";
             }
         }
 
         public override int snippetContextBefore { get { return 1; } }
-
-        public override string SmellDescription
-        {
-            get
-            {
-                return "Lines that are too long make your code less readable.";
-            }
-        }
 
         public override void AnalyzeLine(string currentLine, string previousLine, int lineNum)
         {
