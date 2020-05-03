@@ -1,7 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace BSDetector
+namespace BSDetector.Resources
 {
+    /// <summary>
+    /// Represents a public GitHub repo analysis request
+    /// </summary>
     public class AnalyzeRepoResource
     {
         [Required]

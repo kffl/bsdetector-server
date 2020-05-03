@@ -1,8 +1,11 @@
 using System;
 using BSDetector.Resources;
 
-namespace BSDetector
+namespace BSDetector.Resources
 {
+    /// <summary>
+    /// Represents results of file analysis performed on a single file
+    /// </summary>
     public class FileAnalysisResult
     {
         public string FileName { get; set; }

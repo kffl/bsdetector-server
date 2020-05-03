@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace BSDetector.Analysis.Exceptions
 {
+    /// <summary>
+    /// Represents exceptions that may occur during repository analysis
+    /// </summary>
     public class AnalysisException : Exception
     {
         public virtual int HTTPCode

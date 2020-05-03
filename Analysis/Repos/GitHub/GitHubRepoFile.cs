@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace BSDetector.Analysis.Repos.GitHub
 {
+    /// <summary>
+    /// Represents a file inside a public GitHub repository
+    /// </summary>
     public class GitHubRepoFile : IRepoFile
     {
         [JsonPropertyName("path")]
@@ -27,6 +30,10 @@ namespace BSDetector.Analysis.Repos.GitHub
 
         public string fileContent { get; private set; }
 
+        /// <summary>
+        /// Determines whether or a file is a javascript source file for analysis
+        /// </summary>
+        /// <returns>Should this file be analyzed as JS file</returns>
         public bool isJsFile()
         {
             if (objType == "blob" && fileName.EndsWith(".js"))
@@ -43,6 +50,12 @@ namespace BSDetector.Analysis.Repos.GitHub
             return false;
         }
 
+        /// <summary>
+        /// Fetches a file from raw GitHub user content service
+        /// </summary>
+        /// <param name="userName">Source repository owner's username</param>
+        /// <param name="repoName">Source repository name</param>
+        /// <returns></returns>
         public async Task FetchRawContent(string userName, string repoName)
         {
             using (HttpClient client = new HttpClient())

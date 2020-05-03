@@ -3,6 +3,9 @@ using System.Text.Json.Serialization;
 namespace BSDetector.Resources
 
 {
+    /// <summary>
+    /// Represents an error response
+    /// </summary>
     public class ErrorResponse
     {
         [JsonPropertyName("error")]

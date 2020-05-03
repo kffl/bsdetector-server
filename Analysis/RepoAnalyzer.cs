@@ -4,16 +4,30 @@ using BSDetector.Resources;
 
 namespace BSDetector.Analysis
 {
+    /// <summary>
+    /// Repository analyzer that analyzes code of given repo source
+    /// </summary>
     public class RepoAnalyzer
     {
         private IRepoSource repoSource;
+        /// <summary>
+        /// Stores results of performed repo analysis
+        /// </summary>
+        /// <value>Repo analysis result</value>
         public List<FileAnalysisResult> AnalysisResult { get; private set; }
+        /// <summary>
+        /// RepoAnalyzer constructor that uses a pre-configured repository source via dependency injection
+        /// </summary>
+        /// <param name="repoSource">Pre-configured repository source for analysis</param>
         public RepoAnalyzer(IRepoSource repoSource)
         {
             this.repoSource = repoSource;
             AnalysisResult = new List<FileAnalysisResult>();
         }
 
+        /// <summary>
+        /// Performs code analysis of a repo
+        /// </summary>
         public void AnalyzeRepo()
         {
             foreach (var file in repoSource.GetFiles())

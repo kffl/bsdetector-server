@@ -1,7 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace BSDetector
+namespace BSDetector.Resources
 {
+    /// <summary>
+    /// Represents a single file analysis request
+    /// </summary>
     public class AnalyzeCodeResource
     {
         [Required]

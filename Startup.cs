@@ -14,7 +14,6 @@ namespace BSDetector
 {
     public class Startup
     {
-        readonly string MyAllowSpecificOrigins = "_allowClientApp";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;

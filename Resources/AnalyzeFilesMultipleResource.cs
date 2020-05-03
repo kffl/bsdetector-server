@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Http;
 
 namespace BSDetector.Resources
 {
+    /// <summary>
+    /// Represents a request containing one or multiple files uploaded for analysis
+    /// </summary>
     public class AnalyzeFilesMultipleResource
     {
         [Required]

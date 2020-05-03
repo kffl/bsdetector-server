@@ -4,9 +4,13 @@ using Esprima.Utils;
 using Esprima.Ast;
 using System.Collections.Generic;
 using BSDetector.Analysis.Repos;
+using BSDetector.Resources;
 
 namespace BSDetector
 {
+    /// <summary>
+    /// Performs analysis of a single file
+    /// </summary>
     public class CodeAnalyzer
     {
         private string fileName;
@@ -15,19 +19,30 @@ namespace BSDetector
         private List<AstSmell> AstSmells = new List<AstSmell> { new TooManyParametersFunction(), new TooManyParametersArrowFunction() };
         private List<LineSmell> LineSmells = new List<LineSmell> { new LineTooLong() };
 
+        /// <summary>
+        /// Constructor that uses source code and filename
+        /// </summary>
+        /// <param name="code">Source code for analysis</param>
+        /// <param name="fileName">Analyzed file name</param>
         public CodeAnalyzer(string code, string fileName = null)
         {
             this.code = code;
             this.fileName = fileName;
         }
 
+        /// <summary>
+        /// CodeAnalyzer constructor that uses a repository file to be analyzed
+        /// </summary>
+        /// <param name="file">Repository file to be analyzed</param>
         public CodeAnalyzer(IRepoFile file)
         {
             this.code = file.fileContent;
             this.fileName = file.fileName;
         }
 
-        //simplified analysis is performed by iterating over the entire code line by line
+        /// <summary>
+        /// Simplified analysis is performed by iterating over the entire code line by line 
+        /// </summary>
         private void SimplifiedAnalysis()
         {
 
@@ -50,6 +65,11 @@ namespace BSDetector
             linesAnalyzed = lineNum - 1;
         }
 
+        /// <summary>
+        /// Recursively performs Depth First Traversal of the AST
+        /// </summary>
+        /// <param name="node">Current/starting AST node</param>
+        /// <param name="depth">Current depth</param>
         private void ASTreeDFS(INode node, int depth)
         {
 
@@ -64,6 +84,10 @@ namespace BSDetector
             }
         }
 
+        /// <summary>
+        /// Builds an abstract syntax tree out of source file
+        /// </summary>
+        /// <returns>Parsed program including it's AST</returns>
         private Script BuildAST()
         {
             var customParserOptions = new ParserOptions();
@@ -76,8 +100,10 @@ namespace BSDetector
             return program;
         }
 
-        //ast analysis is performed by going through the entire abstract syntax tree
-        //...and analysing visited nodes
+        /// <summary>
+        /// Ast analysis is performed by going through the entire abstract syntax tree
+        /// and analyzing visited nodes
+        /// </summary>
         private void ASTAnalysis()
         {
 
@@ -89,6 +115,10 @@ namespace BSDetector
             }
         }
 
+        /// <summary>
+        /// Performs analysis of a single file
+        /// </summary>
+        /// <returns>Results of file analysis</returns>
         public FileAnalysisResult AnalyzeCode()
         {
             SimplifiedAnalysis();
@@ -103,6 +133,10 @@ namespace BSDetector
             };
         }
 
+        /// <summary>
+        /// Generates an abstract syntax tree as JOSN.
+        /// </summary>
+        /// <returns>JSON stringified abstract syntax tree</returns>
         public string GetASTasJSONstring()
         {
             var program = BuildAST();
