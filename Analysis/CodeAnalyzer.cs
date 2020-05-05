@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
+using BSDetector.Analysis.Smells.AstSmells;
 using Esprima;
-using Esprima.Utils;
 using Esprima.Ast;
 using System.Collections.Generic;
 using BSDetector.Analysis.Repos;
 using BSDetector.Resources;
+using Esprima.Utils;
 
 namespace BSDetector
 {
@@ -18,7 +20,12 @@ namespace BSDetector
         private string code;
         private string[] lines;
         private int linesAnalyzed = 0;
-        private List<AstSmell> AstSmells = new List<AstSmell> { new TooManyParametersFunction(), new TooManyParametersArrowFunction() };
+        private List<AstSmell> AstSmells = new List<AstSmell> 
+        {
+            new TooManyParametersFunction(), new TooManyParametersArrowFunction(), new LongChainingOfDotFunctions(),
+            new LongScopeChaining(), new SmallSwitchStatement(), new LongMethod(), new ExcessivelyShortIdentifiers(),
+            new ExcessivelyLongIdentifiers()
+        };
         private List<LineSmell> LineSmells = new List<LineSmell> { new LineTooLong() };
 
         /// <summary>
@@ -64,10 +71,7 @@ namespace BSDetector
             string previousLine = "";
             foreach (var line in lines)
             {
-                foreach (var smell in LineSmells)
-                {
-                    smell.AnalyzeLine(line, previousLine, lineNum);
-                }
+                foreach (var smell in LineSmells) smell.AnalyzeLine(line, previousLine, lineNum);
                 lineNum++;
                 previousLine = line;
             }
@@ -81,16 +85,12 @@ namespace BSDetector
         /// <param name="depth">Current depth</param>
         private void ASTreeDFS(INode node, int depth)
         {
+            foreach (var smell in AstSmells) smell.AnalyzeNode(node, depth);
 
-            foreach (var smell in AstSmells)
-            {
-                smell.AnalyzeNode(node, depth);
-            }
-
-            foreach (var child in node.ChildNodes)
-            {
-                ASTreeDFS(child, depth + 1);
-            }
+            //foreach (var child in node.ChildNodes)
+            //{
+            //    ASTreeDFS(child, depth + 1);
+            //}
         }
 
         /// <summary>
@@ -115,13 +115,9 @@ namespace BSDetector
         /// </summary>
         private void ASTAnalysis()
         {
-
             var tree = BuildAST().Body;
 
-            foreach (var node in tree.AsNodes())
-            {
-                ASTreeDFS(node, 0);
-            }
+            foreach (var node in tree.AsNodes()) ASTreeDFS(node, 0);
         }
 
         /// <summary>
@@ -171,9 +167,8 @@ namespace BSDetector
         public string GetASTasJSONstring()
         {
             var program = BuildAST();
-            return program.ToJsonString(new AstJson
-                                            .Options()
-                                            .WithIncludingLineColumn(true));
+            return program.ToJsonString(new AstJson.Options()
+                .WithIncludingLineColumn(true));
         }
     }
 }
