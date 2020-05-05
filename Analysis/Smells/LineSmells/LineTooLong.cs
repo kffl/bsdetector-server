@@ -2,11 +2,16 @@ namespace BSDetector
 {
     public class LineTooLong : LineSmell
     {
-        public LineTooLong()
+        public override string SmellName
         {
-            SmellName = "Line too long";
-            SmellDescription = "Lines that are too long make your code less readable.";
+            get
+            {
+                return "LINE_TOO_LONG";
+            }
         }
+
+        public override int snippetContextBefore { get { return 1; } }
+
         public override void AnalyzeLine(string currentLine, string previousLine, int lineNum)
         {
             if (currentLine.Length > 140)
