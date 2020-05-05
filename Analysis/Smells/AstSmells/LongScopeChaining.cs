@@ -5,11 +5,7 @@ namespace BSDetector.Analysis.Smells.AstSmells
 {
     public class LongScopeChaining : AstSmell
     {
-        public LongScopeChaining()
-        {
-            SmellName = "Too many levels of multiply-nested functions";
-            SmellDescription = "Maximum recommended level of nested functions is: 3.";
-        }
+        public override string SmellName => "LONG_SCOPE_CHAINING";
 
         public override void AnalyzeNode(INode node, int levelOfFunction)
         {

@@ -4,13 +4,7 @@ namespace BSDetector
 {
     public class TooManyParametersFunction : AstSmell
     {
-        public override string SmellName
-        {
-            get
-            {
-                return "TOO_MANY_PARAMS_FUNCTION";
-            }
-        }
+        public override string SmellName => "TOO_MANY_PARAMS_FUNCTION";
 
         public override void AnalyzeNode(INode node, int depth)
         {

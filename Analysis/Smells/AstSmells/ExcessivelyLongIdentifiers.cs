@@ -4,11 +4,7 @@ namespace BSDetector.Analysis.Smells.AstSmells
 {
     public class ExcessivelyLongIdentifiers : AstSmell
     {
-        public ExcessivelyLongIdentifiers()
-        {
-            SmellName = "Identifier is excessively long";
-            SmellDescription = "Maximum recommended number of chars for identifiers is: 30.";
-        }
+        public override string SmellName => "EXCESSIVELY_LONG_ID";
 
         public override void AnalyzeNode(INode node, int depth)
         {

@@ -5,11 +5,7 @@ namespace BSDetector.Analysis.Smells.AstSmells
 {
     public class LongChainingOfDotFunctions : AstSmell
     {
-        public LongChainingOfDotFunctions()
-        {
-            SmellName = "Too long chaining of functions with the dot operator";
-            SmellDescription = "Maximum recommended number of function for chain with dot operator is: 6.";
-        }
+        public override string SmellName => "CHAIN_DOT_FUNC";
 
         public override void AnalyzeNode(INode node, int chainLength)
         {

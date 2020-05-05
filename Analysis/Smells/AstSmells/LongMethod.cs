@@ -4,11 +4,7 @@ namespace BSDetector.Analysis.Smells.AstSmells
 {
     public class LongMethod : AstSmell
     {
-        public LongMethod()
-        {
-            SmellName = "Too long method";
-            SmellDescription = "Maximum recommended number of lines of code is: 40.";
-        }
+        public override string SmellName => "LONG_METHOD";
 
         public override void AnalyzeNode(INode node, int depth)
         {
