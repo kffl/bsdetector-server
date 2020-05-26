@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using BSDetector.Analysis.Smells.AstSmells;
 using Esprima;
 using Esprima.Ast;
-using System.Collections.Generic;
 using BSDetector.Analysis.Repos;
 using BSDetector.Resources;
 using Esprima.Utils;
@@ -20,7 +19,7 @@ namespace BSDetector
         private string code;
         private string[] lines;
         private int linesAnalyzed = 0;
-        private List<AstSmell> AstSmells = new List<AstSmell> 
+        private List<AstSmell> AstSmells = new List<AstSmell>
         {
             new TooManyParametersFunction(), new TooManyParametersArrowFunction(), new LongChainingOfDotFunctions(),
             new LongScopeChaining(), new SmallSwitchStatement(), new LongMethod(), new ExcessivelyShortIdentifiers(),
@@ -58,8 +57,8 @@ namespace BSDetector
         private void ParseLines(string code)
         {
             lines = code.Split(
-                        new[] { "\r\n", "\r", "\n" },
-                        StringSplitOptions.None);
+                new[] { "\r\n", "\r", "\n" },
+                StringSplitOptions.None);
         }
 
         /// <summary>
@@ -85,12 +84,15 @@ namespace BSDetector
         /// <param name="depth">Current depth</param>
         private void ASTreeDFS(INode node, int depth)
         {
-            foreach (var smell in AstSmells) smell.AnalyzeNode(node, depth);
+            foreach (var smell in AstSmells)
+            {
+                smell.AnalyzeNode(node, depth);
+            }
 
-            //foreach (var child in node.ChildNodes)
-            //{
-            //    ASTreeDFS(child, depth + 1);
-            //}
+            foreach (var child in node.ChildNodes)
+            {
+                ASTreeDFS(child, depth + 1);
+            }
         }
 
         /// <summary>

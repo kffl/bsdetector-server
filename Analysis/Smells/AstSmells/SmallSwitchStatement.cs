@@ -8,11 +8,8 @@ namespace BSDetector.Analysis.Smells.AstSmells
 
         public override void AnalyzeNode(INode node, int depth)
         {
-            if (node is SwitchStatement SwitchStatementnNode)
-                if (SwitchStatementnNode.Cases.Count < 4)
-                    RegisterOccurrence(SwitchStatementnNode.Location);
-
-            foreach (var child in node.ChildNodes) AnalyzeNode(child, depth + 1);
+            if (node is SwitchStatement SwitchStatementNode && SwitchStatementNode.Cases.Count < 4)
+                RegisterOccurrence(SwitchStatementNode.Location);
         }
     }
 }

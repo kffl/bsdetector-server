@@ -1,4 +1,4 @@
-﻿using Esprima;
+﻿using System.Collections.Generic;
 using Esprima.Ast;
 
 namespace BSDetector.Analysis.Smells.AstSmells
@@ -7,29 +7,18 @@ namespace BSDetector.Analysis.Smells.AstSmells
     {
         public override string SmellName => "LONG_SCOPE_CHAINING";
 
-        public override void AnalyzeNode(INode node, int levelOfFunction)
+        private Stack<int> LevelStack = new Stack<int>();
+
+
+        public override void AnalyzeNode(INode node, int depth)
         {
+            while (LevelStack.Count > 0 && LevelStack.Peek() >= depth)
+                LevelStack.Pop();
             if (node is FunctionDeclaration FunctionDeclarationNode)
             {
-                levelOfFunction += 1;
-                foreach (var child in node.ChildNodes)
-                    AnalyzeNode(child, levelOfFunction, FunctionDeclarationNode.Location);
+                LevelStack.Push(depth);
+                if (LevelStack.Count == 4) RegisterOccurrence(FunctionDeclarationNode.Location);
             }
-            else
-            {
-                foreach (var child in node.ChildNodes) AnalyzeNode(child, levelOfFunction);
-            }
-        }
-
-        public override void AnalyzeNode(INode node, int levelOfFunction, Location location)
-        {
-            if (node is FunctionDeclaration FunctionDeclarationNode)
-            {
-                levelOfFunction += 1;
-                if (levelOfFunction == 4) RegisterOccurrence(location);
-            }
-
-            foreach (var child in node.ChildNodes) AnalyzeNode(child, levelOfFunction, location);
         }
     }
 }
