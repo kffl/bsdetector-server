@@ -18,7 +18,10 @@ namespace BSDetector
         private string code;
         private string[] lines;
         private int linesAnalyzed = 0;
-        private List<AstSmell> AstSmells = new List<AstSmell> { new TooManyParametersFunction(), new TooManyParametersArrowFunction() };
+        private List<AstSmell> AstSmells = new List<AstSmell> { 
+            new TooManyParametersFunction(), new TooManyParametersArrowFunction(),
+            new VariableNotDeclared(), new DuplicatedIdentifier(),
+        };
         private List<LineSmell> LineSmells = new List<LineSmell> { new LineTooLong() };
 
         /// <summary>
@@ -81,6 +84,8 @@ namespace BSDetector
         /// <param name="depth">Current depth</param>
         private void ASTreeDFS(INode node, int depth)
         {
+            bool funDeclNode = node is FunctionDeclaration;
+            if(funDeclNode) Scopes.scopes.Add(new HashSet<string>());
 
             foreach (var smell in AstSmells)
             {
@@ -91,6 +96,8 @@ namespace BSDetector
             {
                 ASTreeDFS(child, depth + 1);
             }
+
+            if (funDeclNode) Scopes.scopes.RemoveAt(Scopes.scopes.Count - 1); // remove last item
         }
 
         /// <summary>
