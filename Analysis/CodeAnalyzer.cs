@@ -18,8 +18,14 @@ namespace BSDetector
         private string code;
         private string[] lines;
         private int linesAnalyzed = 0;
-        private List<AstSmell> AstSmells = new List<AstSmell> { new TooManyParametersFunction(), new TooManyParametersArrowFunction() };
-        private List<LineSmell> LineSmells = new List<LineSmell> { new LineTooLong() };
+        private List<AstSmell> AstSmells = new List<AstSmell> { 
+            new TooManyParametersFunction(), new TooManyParametersArrowFunction(),
+            new ReservedWord(), new BigSwitchStatement(), new NoBreakInSwitchCase(),
+            new NonExplicitOctal(), new NestedSwitch(), new NoDefaultCase(), 
+            new EmptyStatementSmell(), new GlobalThis(), new SimpleRethrow(),
+
+        };
+        private List<LineSmell> LineSmells = new List<LineSmell> { new LineTooLong(), new DuplicatedCode() };
 
         /// <summary>
         /// Constructor that uses source code and filename
