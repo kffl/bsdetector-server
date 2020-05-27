@@ -1,10 +1,11 @@
 using System;
-using Esprima;
-using Esprima.Utils;
-using Esprima.Ast;
 using System.Collections.Generic;
+using BSDetector.Analysis.Smells.AstSmells;
+using Esprima;
+using Esprima.Ast;
 using BSDetector.Analysis.Repos;
 using BSDetector.Resources;
+using Esprima.Utils;
 
 namespace BSDetector
 {
@@ -18,9 +19,11 @@ namespace BSDetector
         private string code;
         private string[] lines;
         private int linesAnalyzed = 0;
-        private List<AstSmell> AstSmells = new List<AstSmell> { 
-            new TooManyParametersFunction(), new TooManyParametersArrowFunction(),
-            new VariableNotDeclared(), new DuplicatedIdentifier(),
+        private List<AstSmell> AstSmells = new List<AstSmell>
+        {
+            new TooManyParametersFunction(), new TooManyParametersArrowFunction(), new LongChainingOfDotFunctions(),
+            new LongScopeChaining(), new SmallSwitchStatement(), new LongMethod(), new ExcessivelyShortIdentifiers(),
+            new ExcessivelyLongIdentifiers(), new VariableNotDeclared(), new DuplicatedIdentifier(),
         };
         private List<LineSmell> LineSmells = new List<LineSmell> { new LineTooLong() };
 
@@ -54,8 +57,8 @@ namespace BSDetector
         private void ParseLines(string code)
         {
             lines = code.Split(
-                        new[] { "\r\n", "\r", "\n" },
-                        StringSplitOptions.None);
+                new[] { "\r\n", "\r", "\n" },
+                StringSplitOptions.None);
         }
 
         /// <summary>
@@ -67,10 +70,7 @@ namespace BSDetector
             string previousLine = "";
             foreach (var line in lines)
             {
-                foreach (var smell in LineSmells)
-                {
-                    smell.AnalyzeLine(line, previousLine, lineNum);
-                }
+                foreach (var smell in LineSmells) smell.AnalyzeLine(line, previousLine, lineNum);
                 lineNum++;
                 previousLine = line;
             }
@@ -122,13 +122,9 @@ namespace BSDetector
         /// </summary>
         private void ASTAnalysis()
         {
-
             var tree = BuildAST().Body;
 
-            foreach (var node in tree.AsNodes())
-            {
-                ASTreeDFS(node, 0);
-            }
+            foreach (var node in tree.AsNodes()) ASTreeDFS(node, 0);
         }
 
         /// <summary>
@@ -178,9 +174,8 @@ namespace BSDetector
         public string GetASTasJSONstring()
         {
             var program = BuildAST();
-            return program.ToJsonString(new AstJson
-                                            .Options()
-                                            .WithIncludingLineColumn(true));
+            return program.ToJsonString(new AstJson.Options()
+                .WithIncludingLineColumn(true));
         }
     }
 }
