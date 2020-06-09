@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
 using BSDetector.Analysis.Repos.Uploaded;
+using BSDetector.Models;
 
 namespace BSDetector.Controllers
 {
@@ -37,6 +38,7 @@ namespace BSDetector.Controllers
     [Route("[controller]")]
     public class FileAnalysisController : ControllerBase
     {
+        private readonly StatsContext _context;
         public class JsonStringResult : ContentResult
         {
             public JsonStringResult(string json)
@@ -48,9 +50,9 @@ namespace BSDetector.Controllers
 
         private readonly ILogger<FileAnalysisController> _logger;
 
-        public FileAnalysisController(ILogger<FileAnalysisController> logger)
+        public FileAnalysisController(ILogger<FileAnalysisController> logger, StatsContext context)
         {
-            _logger = logger;
+            _logger = logger; _context = context;
         }
 
         [HttpPost("/api/analyze")]
@@ -59,7 +61,9 @@ namespace BSDetector.Controllers
         public FileAnalysisResult Analyze([FromBody] AnalyzeCodeResource data)
         {
             var analyzer = new CodeAnalyzer(data.Code);
-            return analyzer.AnalyzeCode();
+            var res = analyzer.AnalyzeCode();
+            _context.AddToKeyAsync("lines", res.LinesAnalyzed);
+            return res;
         }
 
         // Uploaded files analysis endpoint
