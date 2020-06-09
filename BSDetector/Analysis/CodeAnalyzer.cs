@@ -23,7 +23,7 @@ namespace BSDetector
         {
             new TooManyParametersFunction(), new TooManyParametersArrowFunction(), new LongChainingOfDotFunctions(),
             new LongScopeChaining(), new SmallSwitchStatement(), new LongMethod(), new ExcessivelyShortIdentifiers(),
-            new ExcessivelyLongIdentifiers()
+            new ExcessivelyLongIdentifiers(), new VariableNotDeclared(), new DuplicatedIdentifier(),
         };
         private List<LineSmell> LineSmells = new List<LineSmell> { new LineTooLong() };
 
@@ -84,6 +84,9 @@ namespace BSDetector
         /// <param name="depth">Current depth</param>
         private void ASTreeDFS(INode node, int depth)
         {
+            bool funDeclNode = node is FunctionDeclaration;
+            if(funDeclNode) Scopes.scopes.Add(new HashSet<string>());
+
             foreach (var smell in AstSmells)
             {
                 smell.AnalyzeNode(node, depth);
@@ -93,6 +96,8 @@ namespace BSDetector
             {
                 ASTreeDFS(child, depth + 1);
             }
+
+            if (funDeclNode) Scopes.scopes.RemoveAt(Scopes.scopes.Count - 1); // remove last item
         }
 
         /// <summary>
