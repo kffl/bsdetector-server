@@ -6,33 +6,32 @@ namespace BSDetector.Analysis.Smells.AstSmells
 {
     public class LongChainingOfDotFunctions : AstSmell
     {
-        private readonly Queue<Location> LocationQueue = new Queue<Location>();
-
         private int Counter;
 
-        private Position endPosition;
-
-        private Position startPosition;
+        private Location? loc;
 
         public override string SmellName => "CHAIN_DOT_FUNC";
-
 
         public override void AnalyzeNode(INode node, int depth)
         {
             if (node is ExpressionStatement || node is CallExpression || node is BinaryExpression ||
-                node is VariableDeclaration) LocationQueue.Enqueue(node.Location);
+                node is VariableDeclaration)
+            {
+                if (loc == null) loc = node.Location;
+            }
 
             if (node is MemberExpression)
             {
-                if (++Counter == 1) startPosition = node.Location.Start;
-                endPosition = node.Location.End;
+                Counter++;
             }
 
-            if (node is Identifier && LocationQueue.Count > 0 && Counter != 0)
+            if (node is Identifier )
             {
-                if (Counter >= 5)
-                    RegisterOccurrence(new Location(startPosition, endPosition, LocationQueue.Peek().Source));
-                LocationQueue.Dequeue();
+                if (Counter > 5)
+                {
+                    RegisterOccurrence(loc.GetValueOrDefault());
+                }
+                loc = null;
                 Counter = 0;
             }
         }
