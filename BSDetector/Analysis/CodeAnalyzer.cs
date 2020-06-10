@@ -85,7 +85,7 @@ namespace BSDetector
         private void ASTreeDFS(INode node, int depth)
         {
             bool funDeclNode = node is FunctionDeclaration;
-            if(funDeclNode) Scopes.scopes.Add(new HashSet<string>());
+            if (funDeclNode) Scopes.scopes.Add(new HashSet<string>());
 
             foreach (var smell in AstSmells)
             {
@@ -159,11 +159,17 @@ namespace BSDetector
             smellsList = new List<Smell>(LineSmells);
             smellsList.AddRange(AstSmells);
             AddSmellSnippets();
+            var smellCount = 0;
+            foreach (var smell in smellsList)
+            {
+                smellCount += smell.Occurrences.Count;
+            }
             return new FileAnalysisResult
             {
                 FileName = fileName,
                 LinesAnalyzed = linesAnalyzed,
-                SmellsDetected = smellsList.ToArray()
+                SmellsDetected = smellsList.ToArray(),
+                SmellCount = smellCount
             };
         }
 

@@ -12,5 +12,6 @@ namespace BSDetector.Resources
         public int LinesAnalyzed { get; set; }
         public Smell[] SmellsDetected { get; set; }
         public ErrorResponse error { get; set; }
+        public int SmellCount { get; set; }
     }
 }
