@@ -17,7 +17,8 @@ jobs:
         with:
           dotnet-version: 3.1.101
       - name: Build
-        working-directory: ./
+        working-directory: ./BSDetector/
         run: dotnet build --configuration Release
       - name: Test with dotnet
+        working-directory: ./BSDetector.Tests/
         run: dotnet test --configuration Release

@@ -10,7 +10,7 @@ namespace BSDetector
             }
         }
 
-        public override int snippetContextBefore { get { return 1; } }
+        public override int snippetContextBefore { get { return 0; } }
 
         public override void AnalyzeLine(string currentLine, string previousLine, int lineNum)
         {
