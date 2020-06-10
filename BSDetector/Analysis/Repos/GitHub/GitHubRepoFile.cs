@@ -1,6 +1,7 @@
 using System;
 using System.Net.Http;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace BSDetector.Analysis.Repos.GitHub
@@ -38,7 +39,8 @@ namespace BSDetector.Analysis.Repos.GitHub
         {
             if (objType == "blob" && fileName.EndsWith(".js"))
             {
-                if (!fileName.Contains("node_modules/") && !fileName.Contains(".min."))
+                Regex r = new Regex(@"node_modeules|\.min|\.spec|\.test|\.conf");
+                if (!r.IsMatch(fileName))
                 {
                     return true;
                 }

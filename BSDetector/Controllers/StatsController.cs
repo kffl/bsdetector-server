@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using BSDetector.Models;
+using BSDetector.Resources;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,9 +17,16 @@ namespace BSDetector.Controllers
 
         [HttpGet("/api/stats")]
         [EnableCors("ClientApp")]
-        public async Task<Stat> Index()
+        public StatsResource Index()
         {
-            return _context.Stats.Find("lines");
+            var stats = new StatsResource
+            {
+                lines = _context.Stats.Find("lines").value,
+                smells = _context.Stats.Find("smells").value,
+                files = _context.Stats.Find("files").value,
+                repos = _context.Stats.Find("repos").value
+            };
+            return stats;
         }
     }
 }

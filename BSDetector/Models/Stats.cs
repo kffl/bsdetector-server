@@ -29,9 +29,12 @@ namespace BSDetector.Models
 
         public async Task AddToKeyAsync(string key, int value)
         {
-            var item = await this.Stats.FirstAsync(k => k.key == key);
-            item.value += value;
-            this.SaveChanges();
+            if (value > 0)
+            {
+                var item = await this.Stats.FirstAsync(k => k.key == key);
+                item.value += value;
+                this.SaveChanges();
+            }
         }
     }
 

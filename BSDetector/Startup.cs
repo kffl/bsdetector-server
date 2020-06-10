@@ -1,17 +1,13 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using BSDetector.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+
 
 namespace BSDetector
 {
@@ -51,21 +47,20 @@ namespace BSDetector
             }
             var optionsBuilder = new DbContextOptionsBuilder<StatsContext>();
             optionsBuilder.UseSqlite("Data Source=stats.db");
-            //using (var context = new StatsContext(optionsBuilder.Options))
-            //{
             //context.Database.Migrate();
             context.Database.EnsureCreated();
 
-            var k = context.Stats.FirstOrDefault(k => k.key == "lines");
-            Console.WriteLine(k);
-            if (k == null)
+            // seeding the DB with empty keys (having value of 0)
+            var keys = new List<string>() { "lines", "smells", "files", "repos" };
+            foreach (var key in keys)
             {
-                context.Stats.Add(new Stat { key = "lines", value = 0 });
-                Console.WriteLine("is null");
+                var entry = context.Stats.FirstOrDefault(k => k.key == key);
+                if (entry == null)
+                {
+                    context.Stats.Add(new Stat { key = key, value = 0 });
+                    context.SaveChanges();
+                }
             }
-
-            context.SaveChanges();
-            //}
 
             app.UseHttpsRedirection();
 
