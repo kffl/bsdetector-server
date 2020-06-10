@@ -23,7 +23,7 @@ namespace BSDetector
         {
             new TooManyParametersFunction(), new TooManyParametersArrowFunction(), new LongChainingOfDotFunctions(),
             new LongScopeChaining(), new SmallSwitchStatement(), new LongMethod(), new ExcessivelyShortIdentifiers(),
-            new ExcessivelyLongIdentifiers(), new VariableNotDeclared(), new DuplicatedIdentifier(),
+            new ExcessivelyLongIdentifiers(), new VariableNotDeclared()
         };
         private List<LineSmell> LineSmells = new List<LineSmell> { new LineTooLong() };
 
